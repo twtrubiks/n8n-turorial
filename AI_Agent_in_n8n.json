@@ -1,0 +1,361 @@
+{
+  "name": "AI Agent in n8n",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        140,
+        -40
+      ],
+      "id": "978bae3f-75fd-469d-b564-6c4a3e1cdb44",
+      "name": "When chat message received",
+      "webhookId": "97c1a41f-8ef0-4d63-a924-92eb634384d3"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "你是一個私人秘書, 回覆我的時候請用中文, 以及整理成人類可以看得懂的格式."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        360,
+        -40
+      ],
+      "id": "ba1fb064-2ed2-4082-828b-87381f8c5533",
+      "name": "AI Agent",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        460,
+        260
+      ],
+      "id": "8a0e052f-4826-4580-ab84-1bb79c1ededa",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        240
+      ],
+      "id": "3b84241a-429c-40b1-8fcc-e23b8248da9a",
+      "name": "OpenRouter Chat Model",
+      "notesInFlow": false,
+      "credentials": {
+        "openRouterApi": {
+          "id": "gmJFBorpcH1GaZ0b",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-pro-exp-03-25",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        60,
+        240
+      ],
+      "id": "a3c1ec37-d569-4fc5-b30b-8fd21484a59b",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "bZQNCZ9tTadjRY8H",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "includeTime": "={{ $fromAI('Include_Current_Time', ``, 'boolean') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTimeTool",
+      "typeVersion": 2,
+      "position": [
+        920,
+        260
+      ],
+      "id": "990acde9-7ec3-48f0-89cc-45d7c66f78c8",
+      "name": "get current time"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C08KA2X855M",
+          "mode": "list",
+          "cachedResultName": "test"
+        },
+        "text": "={{ $fromAI('Message_Text', ``, 'string') }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slackTool",
+      "typeVersion": 2.3,
+      "position": [
+        1100,
+        260
+      ],
+      "id": "f1bce086-5d70-47c2-a25b-99e40cf4f8f3",
+      "name": "Slack",
+      "webhookId": "8d66db14-60da-470f-8c76-740474713278",
+      "credentials": {
+        "slackApi": {
+          "id": "x5sdsL3JwlDBXenF",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "這個工具可以得到台灣的新聞",
+        "url": "https://gnews.io/api/v4/top-headlines?country=tw&category=general&max=3&apikey=xxxxxx"
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        260
+      ],
+      "id": "f666491e-09cb-4e14-b04f-9f68b1375d06",
+      "name": "Get TW News"
+    },
+    {
+      "parameters": {
+        "content": "## I'm a note \n使用 openai/gpt-4o-mini\n\ngemini 比較笨 會錯誤\n\nopenai 官方無法免費使用",
+        "height": 280
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -360,
+        220
+      ],
+      "id": "f044a99b-822f-4a77-b26f-d8960cfb7c4a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-3.5-turbo",
+          "mode": "list",
+          "cachedResultName": "gpt-3.5-turbo"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        240
+      ],
+      "id": "03287af3-24dc-4ec3-9359-828119477914",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "p967kiOIJxudH5F5",
+          "name": "OpenAi account - bllue555"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "=xxxxx",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "=https://github.com/xxxxx/xxxxx",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1,
+      "position": [
+        1260,
+        260
+      ],
+      "id": "e7785db0-be9a-4237-8780-ed7c07b5db3c",
+      "name": "GitHub",
+      "credentials": {
+        "githubApi": {
+          "id": "SkrtEiB8QuAXXpqP",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "xxxxx",
+          "mode": "list",
+          "cachedResultName": "Personal Project Organizer",
+          "cachedResultUrl": "https://airtable.com/xxxxx"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblGKNSiqTKBYJK8F",
+          "mode": "list",
+          "cachedResultName": "Workflows",
+          "cachedResultUrl": "https://airtable.com/xxxxx/xxxxx"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtableTool",
+      "typeVersion": 2.1,
+      "position": [
+        1460,
+        260
+      ],
+      "id": "4682849b-94f4-417e-a70e-7e44a4ed56fd",
+      "name": "Airtable",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "4IYDGEW2R5oP7VyQ",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "get current time": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Get TW News": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "GitHub": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Airtable": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d1d41a9d-f2a4-4bd0-8f5b-063fd55923fa",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a96fd1e907604997cb039e8ff98aa978f525984c8ebcd83d17163c6df3be6867"
+  },
+  "id": "y9ajwp6QCNfI69Io",
+  "tags": []
+}
