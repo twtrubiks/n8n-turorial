@@ -159,6 +159,65 @@ n8n 官方建議且許多功能（特別是 Webhook）需要在安全的 HTTPS �
 
 也就是說, AI Agent 比較像 Function Calling, 和之後要介紹的 MCP 又不太一樣.
 
+## MCP Server
+
+如果要使用 MCP 中的 MCP Server Trigger (n8n Version `1.88.0` 才有).
+
+通常會使用反向代理( 我使用 Nginx ),
+
+Nginx 記得一定要設定 `proxy_buffering off;` :exclamation: :exclamation: (範例如下)
+
+不然你會發現你的 MCP 一直連不上.
+
+```conf
+ location / {
+    proxy_pass http://n8n:5678;
+    proxy_http_version 1.1;
+    proxy_buffering off;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+    proxy_set_header Host $host;
+  }
+```
+
+這邊說明一下什麼是 `proxy_buffering` 的作用 🤔 這個指令控制 Nginx 是否要緩衝 (buffer) 從後端伺服器.
+
+`on` (預設值): 當 `proxy_buffering` 是 `on` 時，Nginx 會先嘗試從後端讀取 完整 的回應，
+
+將其存儲在記憶體或暫存檔中，然後再 一次性 地將這個完整的回應發送給客戶端。
+
+這樣做的好處是，如果客戶端網路慢，不會長時間佔用後端 n8n 的連線；
+
+壞處是客戶端需要等待 Nginx 接收完所有數據才能開始收到內容，且會消耗 Nginx 伺服器的記憶體/磁碟空間.
+
+`off` 當 `proxy_buffering` 是 `off` 時，
+
+Nginx 會 即時地 將從後端（n8n）收到的數據塊 (chunk) 直接轉發給客戶端，
+
+不做完整的緩衝。收到多少，就轉發多少。
+
+接著說明 n8n 的 MCP Server(與 `proxy_buffering off;` 的關聯)
+
+n8n 有一些功能需要 長時間連接 並且 即時地 將數據從後端推送到前端（瀏覽器）。
+
+SSE Trigger 節點： 如果你的工作流程使用 SSE Trigger (**SSE - Server-Sent Events**) 來接收事件。
+
+為什麼需要 `proxy_buffering off;`
+
+對於像 SSE 這樣的技術，數據是 持續不斷地、一小塊一小塊地 從伺服器發送到客戶端的。
+
+如果 Nginx 使用預設的 `proxy_buffering on;`
+
+它會一直等待 n8n 發送完 所有 的 SSE 數據（對於一個持續的事件流來說，可能永遠不會結束），
+
+然後才轉發給瀏覽器。這就導致瀏覽器完全收不到即時的更新，違背了 SSE 的目的。
+
+只有設置為 `proxy_buffering off;`
+
+Nginx 才能在收到 n8n 發來的一小塊 SSE 數據時，立刻轉發給瀏覽器，從而實現了 n8n 編輯器中的即時反饋效果。
+
+其他注意事項可參考 [Limitations](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.mcptrigger/#limitations)
+
 ## 社群節點 🧩
 
 除了官方提供的節點之外, 社群有提供了非常多的第三方節點可以使用
