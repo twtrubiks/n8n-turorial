@@ -105,6 +105,18 @@ volumes:
 
 如果你在你的雲空間, 直接設定好你的 DNS, 就可以一次完成了.
 
+### 資料庫
+
+這邊補充一下, N8N 預設是使用 SQLite,
+
+也就是 `n8nio/n8n:stable` Image 裡面包含了 SQLite,
+
+用來存儲 credentials, past executions, and workflows 這類的資料.
+
+但是, 也可以使用 [Using with PostgreSQL](https://docs.n8n.io/hosting/installation/docker/#using-with-postgresql), 會有更好的效能(假如你有更大的需求量).
+
+範例可以參考 [n8n-hosting/docker-compose - Postgres](https://github.com/n8n-io/n8n-hosting/blob/main/docker-compose/withPostgres/docker-compose.yml)
+
 ### 關於 Traefik 🚦
 
 traefik 服務是一個現代化的反向代理和負載平衡器，類似於 Nginx。
@@ -151,7 +163,7 @@ n8n 官方建議且許多功能（特別是 Webhook）需要在安全的 HTTPS �
 
 範例 [AI_Agent_in_n8n.json](AI_Agent_in_n8n.json) 直接複製貼上即可.
 
-#### 測試建議
+### 測試建議
 
 在測試 AI Agent 功能時，建議優先使用 OpenAI 的模型，因為其對於 Function Calling / Tool Using 的支援通常較為成熟，
 
